@@ -1,0 +1,41 @@
+# Requirements: CI/CD Pipeline for a Web Service
+
+## Stakeholder
+Dev team of a fictional startup ("[name your startup]") shipping a small web API.
+
+## Problem
+Deployments are manual, slow, and error-prone. Bugs reach staging because
+tests are run inconsistently.
+
+## Goal
+On every push, automatically test, build, scan, and deploy the service to
+staging, with a documented and tested rollback.
+
+## Scope
+**In:** CI pipeline, Docker image, vulnerability scan, staging deploy,
+smoke test, rollback plan.
+**Out:** production deployment, database, authentication, monitoring stack.
+
+## Inputs / Outputs
+- Input: a commit pushed to `main` (or a pull request)
+- Output: a tested, scanned Docker image deployed to staging
+
+## Success Metrics
+| Metric | Target |
+|---|---|
+| Pipeline duration | < 5 min |
+| Merges to main covered by automated tests | 100% |
+| Rollback time | < 2 min |
+| Critical vulnerabilities in deployed image | 0 |
+
+## Constraints
+Free tools only (GitHub Actions free tier, GHCR), no real user data.
+
+## Edge cases to handle
+- Failing test blocks the build and deploy
+- Critical CVE blocks the deploy
+- Staging health check fails after deploy → pipeline fails
+- Invalid API input returns a clean error, not a crash
+
+## Acceptance criteria
+Mapped to section 13 of the handbook (fill in the evidence links as you go).
