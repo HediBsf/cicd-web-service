@@ -15,4 +15,3 @@ def test_add():
 def test_invalid_input():
     r = app.test_client().get("/add/abc/3")
     assert r.status_code == 404
-    
