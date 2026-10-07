@@ -75,3 +75,20 @@ jobs:
           docker tag ${{ env.IMAGE }}:${{ github.sha }} ${{ env.IMAGE }}:staging
           docker push ${{ env.IMAGE }}:${{ github.sha }}
           docker push ${{ env.IMAGE }}:staging
+
+  deploy-staging:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Deploy this commit's image to Render
+        run: |
+          IMG="ghcr.io/${GITHUB_REPOSITORY,,}:${GITHUB_SHA}"
+          ENC=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1], safe=''))" "$IMG")
+          curl --fail -sS -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}&imgURL=${ENC}"
+
+      - name: Smoke test
+        run: |
+          curl --fail --retry 10 --retry-delay 15 --retry-all-errors \
+            "${{ secrets.STAGING_URL }}/health"
