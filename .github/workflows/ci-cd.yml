@@ -52,12 +52,14 @@ jobs:
           tags: ${{ env.IMAGE }}:${{ github.sha }}
 
       - name: Trivy vulnerability scan
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: ${{ env.IMAGE }}:${{ github.sha }}
-          severity: CRITICAL
-          exit-code: "1"
-          ignore-unfixed: true
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            ghcr.io/aquasecurity/trivy:0.69.2 image \
+            --severity CRITICAL \
+            --exit-code 1 \
+            --ignore-unfixed \
+            ${{ env.IMAGE }}:${{ github.sha }}
 
       - name: Log in to GHCR
         if: github.ref == 'refs/heads/main'
